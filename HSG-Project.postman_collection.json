@@ -1,0 +1,110 @@
+{
+  "info": {
+    "_postman_id": "8d0b5ce6-7e52-4d80-9e7a-1d3a51f0f8a1",
+    "name": "HSG Project API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "customerId",
+      "value": "cust_0001"
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload Orders CSV",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "c:\\Users\\ayuve\\Desktop\\HSG-Project\\sample-orders.csv"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/upload-orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "upload-orders"
+          ]
+        },
+        "description": "Uploads a CSV file, stores it using the configured storage mode, parses it, and inserts rows into the shard databases."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Orders By Customer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders?customerId={{customerId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders"
+          ],
+          "query": [
+            {
+              "key": "customerId",
+              "value": "{{customerId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Order By Order ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders",
+            "{{orderId}}"
+          ]
+        },
+        "description": "Set the collection variable orderId to a real UUID from the database before running this request."
+      },
+      "response": []
+    }
+  ]
+}

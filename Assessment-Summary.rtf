@@ -1,0 +1,108 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}}
+\fs24
+\b Backend Engineering Assessment Summary\b0\par
+\par
+\b Project Overview\b0\par
+This project is a Node.js and Express backend that accepts CSV uploads, stores the uploaded file, parses the CSV in batches, and inserts order records into three PostgreSQL shards. The shard selection is based on customer_id so that the same customer is always routed to the same shard.\par
+\par
+\b What Was Set Up\b0\par
+1. PostgreSQL was already installed locally.\par
+2. Three shard databases were created:\par
+   - orders_shard_0\par
+   - orders_shard_1\par
+   - orders_shard_2\par
+3. The migration script was executed using npm run migrate.\par
+4. The migration created the orders table and indexes in all three shard databases.\par
+5. The application was started locally and verified through the health endpoint.\par
+\par
+\b Database Schema\b0\par
+The orders table contains:\par
+   - order_id\par
+   - customer_id\par
+   - order_date\par
+   - order_amount\par
+   - status\par
+   - created_at\par
+\par
+\b Environment Configuration\b0\par
+The application uses the following configuration values in .env:\par
+   - PORT\par
+   - DB_SHARD_0\par
+   - DB_SHARD_1\par
+   - DB_SHARD_2\par
+   - STORAGE_MODE\par
+   - GCP_PROJECT_ID (optional for real GCS mode)\par
+   - GCS_BUCKET_NAME (optional for real GCS mode)\par
+\par
+\b Issues Found and Fixes Applied\b0\par
+1. Application startup failed because src/app.js imported ./routes/orders, but the actual route file was src/routes/order.js.\par
+   Fix: corrected the import path.\par
+2. The route mount path caused duplicated paths for the GET routes.\par
+   Fix: mounted the router at the root path so the routes behave as intended.\par
+3. The assessment code expected Google Cloud Storage upload using ADC, but local testing was blocked because the selected GCP project did not have active billing.\par
+   Fix: added a local storage fallback so the upload flow can be tested without GCP.\par
+\par
+\b Local Storage Fallback\b0\par
+To support local end-to-end testing without a GCS bucket, the storage service was updated so that:\par
+   - STORAGE_MODE=local stores the uploaded CSV in the local-storage folder.\par
+   - STORAGE_MODE=gcs keeps the original Google Cloud Storage behavior.\par
+This preserves the original design while allowing the complete assessment flow to run locally.\par
+\par
+\b Test Data Created\b0\par
+Two CSV files were prepared for testing:\par
+   - sample-orders.csv\par
+   - sample-orders-10000.csv\par
+The larger file contains 10,000 valid order rows for performance and sharding verification.\par
+\par
+\b Commands Used\b0\par
+Project dependency install:\par
+   npm install\par
+\par
+Run migrations:\par
+   npm run migrate\par
+\par
+Start server:\par
+   node src/app.js\par
+\par
+Health check:\par
+   curl.exe http://localhost:3000/health\par
+\par
+Upload CSV:\par
+   curl.exe -X POST -F "file=@sample-orders-10000.csv" http://localhost:3000/upload-orders\par
+\par
+Query orders by customer:\par
+   curl.exe "http://localhost:3000/orders?customerId=cust_0001"\par
+\par
+\b Validation Performed\b0\par
+1. Verified that all three shard databases were created.\par
+2. Verified that the orders table exists in all shards.\par
+3. Verified that the migration ran successfully on shard 0, shard 1, and shard 2.\par
+4. Verified that the server starts successfully on port 3000.\par
+5. Verified that GET /health returns a successful JSON response.\par
+6. Verified that CSV upload succeeds in local storage mode.\par
+7. Verified that 10,000 rows were inserted across the three shards.\par
+\par
+\b Sharding Behavior\b0\par
+The project uses hash-based sharding on customer_id. This means:\par
+   - all orders for the same customer go to the same shard\par
+   - data is distributed across the three databases\par
+   - there is no single central orders table containing all rows\par
+The full dataset is distributed across orders_shard_0, orders_shard_1, and orders_shard_2.\par
+\par
+\b Current Outcome\b0\par
+The backend now runs locally end-to-end with the following working flow:\par
+   - server startup\par
+   - health check\par
+   - CSV upload\par
+   - local file storage fallback\par
+   - CSV parsing in batches\par
+   - insertion into PostgreSQL shards\par
+   - query by customer_id\par
+\par
+\b Note on Google Cloud Storage\b0\par
+The original assessment expects upload to a real Google Cloud Storage bucket using Google ADC. ADC configuration was understood and partially set up, but creating a real bucket was blocked because the selected GCP project had disabled billing. To continue testing without changing the rest of the backend behavior, a local fallback storage mode was added.\par
+\par
+\b Conclusion\b0\par
+The assessment backend has been set up, debugged, and tested successfully in local mode. Database sharding, migrations, API startup, CSV processing, and end-to-end local uploads are all working.\par
+}

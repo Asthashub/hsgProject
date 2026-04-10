@@ -1,0 +1,7 @@
+customer_id,order_date,order_amount,status
+cust_001,2026-04-10T10:00:00Z,120.50,pending
+cust_002,2026-04-10T11:30:00Z,250.00,completed
+cust_001,2026-04-11T09:15:00Z,75.25,shipped
+cust_003,2026-04-11T14:45:00Z,315.99,pending
+cust_004,2026-04-12T08:20:00Z,89.10,completed
+cust_002,2026-04-12T16:05:00Z,42.00,cancelled
